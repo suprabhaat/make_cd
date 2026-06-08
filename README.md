@@ -72,7 +72,6 @@ Go to [**Releases**](https://github.com/suprabhaat/mkcd/releases) and grab the b
 | macOS | arm64 (Apple Silicon) | `mkcd-bin-macos-arm64` |
 | Windows | x86 32-bit | `mkcd-bin-windows-x86.exe` |
 | Windows | amd64 64-bit | `mkcd-bin-windows-amd64.exe` |
-| Windows | arm32 | `mkcd-bin-windows-arm32.exe` |
 | Windows | arm64 | `mkcd-bin-windows-arm64.exe` |
 
 ---
