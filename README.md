@@ -70,7 +70,6 @@ Go to [**Releases**](https://github.com/suprabhaat/mkcd/releases) and grab the b
 | Linux | arm64 | `mkcd-bin-linux-arm64` |
 | macOS | amd64 (Intel) | `mkcd-bin-macos-amd64` |
 | macOS | arm64 (Apple Silicon) | `mkcd-bin-macos-arm64` |
-| macOS | x86 32-bit | `mkcd-bin-macos-x86` |
 | Windows | x86 32-bit | `mkcd-bin-windows-x86.exe` |
 | Windows | amd64 64-bit | `mkcd-bin-windows-amd64.exe` |
 | Windows | arm32 | `mkcd-bin-windows-arm32.exe` |

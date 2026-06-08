@@ -71,10 +71,6 @@ jobs:
             goarch: 386
             asset_name: mkcd-bin-windows-x86.exe
 
-          - target: x86-macos
-            goos: darwin
-            goarch: 386
-            asset_name: mkcd-bin-macos-x86
 
     steps:
       - name: Checkout
