@@ -1,19 +1,122 @@
-name: Build
+name: Release
 
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
+
+permissions:
+  contents: write
 
 jobs:
   build:
+    name: Build ${{ matrix.target }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          # ── arm32 ──────────────────────────────────────────────
+          - target: arm32-linux
+            goos: linux
+            goarch: arm
+            goarm: "6"
+            asset_name: mkcd-bin-linux-arm32
+
+          - target: arm32-windows
+            goos: windows
+            goarch: arm
+            goarm: "6"
+            asset_name: mkcd-bin-windows-arm32.exe
+
+          # ── arm64 ──────────────────────────────────────────────
+          - target: arm64-linux
+            goos: linux
+            goarch: arm64
+            asset_name: mkcd-bin-linux-arm64
+
+          - target: arm64-windows
+            goos: windows
+            goarch: arm64
+            asset_name: mkcd-bin-windows-arm64.exe
+
+          - target: arm64-macos
+            goos: darwin
+            goarch: arm64
+            asset_name: mkcd-bin-macos-arm64
+
+          # ── amd64 (64-bit) ─────────────────────────────────────
+          - target: amd64-linux
+            goos: linux
+            goarch: amd64
+            asset_name: mkcd-bin-linux-amd64
+
+          - target: amd64-windows
+            goos: windows
+            goarch: amd64
+            asset_name: mkcd-bin-windows-amd64.exe
+
+          - target: amd64-macos
+            goos: darwin
+            goarch: amd64
+            asset_name: mkcd-bin-macos-amd64
+
+          # ── x86 (32-bit) ───────────────────────────────────────
+          - target: x86-linux
+            goos: linux
+            goarch: 386
+            asset_name: mkcd-bin-linux-x86
+
+          - target: x86-windows
+            goos: windows
+            goarch: 386
+            asset_name: mkcd-bin-windows-x86.exe
+
+          - target: x86-macos
+            goos: darwin
+            goarch: 386
+            asset_name: mkcd-bin-macos-x86
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-go@v5
+      - name: Set up Go
+        uses: actions/setup-go@v5
         with:
-          go-version: stable
+          go-version: "1.22"
 
-      - run: go build ./...
+      - name: Build
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          GOARM: ${{ matrix.goarm }}
+          CGO_ENABLED: "0"
+        run: |
+          go build -ldflags="-s -w" -trimpath \
+            -o ${{ matrix.asset_name }} \
+            ./cmd/mkcd/src
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset_name }}
+          path: ${{ matrix.asset_name }}
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
